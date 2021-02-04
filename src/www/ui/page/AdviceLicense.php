@@ -75,7 +75,7 @@ class AdviceLicense extends DefaultPlugin
                       'rf_text' => $request->get('rf_text'),
                       'rf_url' => $request->get('url'),
                       'rf_notes' => $request->get('note'),
-                      'rf_risk' => intval($request->get('risk')),
+                      'rf_risk' => intval($request->get('risk'))
                      );
         $vars['message'] = $e->getMessage();
       }
