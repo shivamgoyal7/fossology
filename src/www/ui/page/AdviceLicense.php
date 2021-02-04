@@ -33,7 +33,7 @@ class AdviceLicense extends DefaultPlugin
   function __construct()
   {
     parent::__construct(self::NAME, array(
-        self::TITLE => "Candidate License",
+        self::TITLE => "Candidate Licenses",
         self::MENU_LIST => "Organize::Licenses",
         self::REQUIRES_LOGIN => true
     ));
@@ -47,7 +47,7 @@ class AdviceLicense extends DefaultPlugin
   protected function handle(Request $request)
   {
     $rf = intval($request->get('rf'));
-    $userId = Auth::getUserId();
+    $userId = Auth::getuserId();
     $groupId = Auth::getGroupId();
     /** @var UserDao */
     $userDao = $this->getObject('dao.user');
@@ -64,11 +64,10 @@ class AdviceLicense extends DefaultPlugin
     if ($vars === false) {
       return $this->flushContent( _('invalid license candidate'));
     }
-    $userid = $username['user_name'];
 
     if ($request->get('save')) {
       try {
-        $vars = $this->saveInput($request, $vars, $userid);
+        $vars = $this->saveInput($request, $vars, $userId);
         $vars['message'] = 'Successfully updated.';
       } catch (\Exception $e) {
         $vars = array('rf_shortname' => $request->get('shortname'),
@@ -125,6 +124,11 @@ class AdviceLicense extends DefaultPlugin
       $row['marydone'] = $dbManager->booleanFromDb($row['marydone']);
       $row['rf_lastmodified'] = Convert2BrowserTime($row['rf_lastmodified']);
       $row['rf_creationdate'] = Convert2BrowserTime($row['rf_creationdate']);
+      $userDao = $this->getObject('dao.user');
+      $username = $userDao->getUserByPk($row['rf_user_fk_created']);
+      $row['rf_user_fk_created'] = $username['user_name'];
+      $username = $userDao->getUserByPk($row['rf_user_fk_modified']);
+      $row['rf_user_fk_modified'] = $username['user_name'];
     }
     return $row;
   }
@@ -142,7 +146,7 @@ class AdviceLicense extends DefaultPlugin
    * @throws \Exception
    * @return array $newRow
    */
-  private function saveInput(Request $request, $oldRow, $userid)
+  private function saveInput(Request $request, $oldRow, $userId)
   {
     $shortname = $request->get('shortname');
     $fullname = $request->get('fullname');
@@ -152,8 +156,8 @@ class AdviceLicense extends DefaultPlugin
     $note = $request->get('note');
     $riskLvl = intval($request->get('risk'));
     $lastmodified = date(DATE_ATOM);
-    $useridcreated = $userid;
-    $useridmodified = $userid;
+    $userIdcreated = $userId;
+    $userIdmodified = $userId;
 
     if (empty($shortname) || empty($fullname) || empty($rfText)) {
       throw new \Exception('missing shortname (or) fullname (or) reference text');
@@ -169,11 +173,11 @@ class AdviceLicense extends DefaultPlugin
       throw new \Exception('shortname already in use');
     }
     if ($oldRow['rf_pk'] == -1) {
-      $oldRow['rf_pk'] = $licenseDao->insertUploadLicense($shortname, $rfText, Auth::getGroupId(), $userid);
+      $oldRow['rf_pk'] = $licenseDao->insertUploadLicense($shortname, $rfText, Auth::getGroupId(), $userId);
     }
 
     $licenseDao->updateCandidate($oldRow['rf_pk'], $shortname, $fullname,
-      $rfText, $url, $note, $lastmodified, $useridmodified, !empty($marydone), $riskLvl);
+      $rfText, $url, $note, $lastmodified, $userIdmodified, !empty($marydone), $riskLvl);
     return $this->getDataRow(Auth::getGroupId(), $oldRow['rf_pk']);
    }
 }

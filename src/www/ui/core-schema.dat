@@ -1014,13 +1014,12 @@
   $Schema["TABLE"]["license_candidate"]["rf_lastmodified"]["ALTER"] = "ALTER TABLE \"license_candidate\" ALTER COLUMN \"rf_lastmodified\" DROP NOT NULL, ALTER COLUMN \"rf_lastmodified\" SET DEFAULT now()";
 
   $Schema["TABLE"]["license_candidate"]["rf_user_fk_created"]["DESC"] = "COMMENT ON COLUMN \"license_candidate\".\"rf_user_fk_created\" IS 'group seeing this candidate'";
-  $Schema["TABLE"]["license_candidate"]["rf_user_fk_created"]["ADD"] = "ALTER TABLE \"license_candidate\" ADD COLUMN \"rf_user_fk_created\" text DEFAULT '3'::text";
+  $Schema["TABLE"]["license_candidate"]["rf_user_fk_created"]["ADD"] = "ALTER TABLE \"license_candidate\" ADD COLUMN \"rf_user_fk_created\" int4 DEFAULT 3";
   $Schema["TABLE"]["license_candidate"]["rf_user_fk_created"]["ALTER"] = "ALTER TABLE \"license_candidate\" ALTER COLUMN \"rf_user_fk_created\" DROP NOT NULL";
 
   $Schema["TABLE"]["license_candidate"]["rf_user_fk_modified"]["DESC"] = "COMMENT ON COLUMN \"license_candidate\".\"rf_user_fk_modified\" IS 'group seeing this candidate'";
-  $Schema["TABLE"]["license_candidate"]["rf_user_fk_modified"]["ADD"] = "ALTER TABLE \"license_candidate\" ADD COLUMN \"rf_user_fk_modified\" text";
+  $Schema["TABLE"]["license_candidate"]["rf_user_fk_modified"]["ADD"] = "ALTER TABLE \"license_candidate\" ADD COLUMN \"rf_user_fk_modified\" int4";
   $Schema["TABLE"]["license_candidate"]["rf_user_fk_modified"]["ALTER"] = "ALTER TABLE \"license_candidate\" ALTER COLUMN \"rf_user_fk_modified\" DROP NOT NULL";
-
 
   $Schema["TABLE"]["license_ref_bulk"]["lrb_pk"]["DESC"] = "COMMENT ON COLUMN \"license_ref_bulk\".\"lrb_pk\" IS 'Primary Key'";
   $Schema["TABLE"]["license_ref_bulk"]["lrb_pk"]["ADD"] = "ALTER TABLE \"license_ref_bulk\" ADD COLUMN \"lrb_pk\" int8 DEFAULT nextval('license_ref_bulk_lrb_pk_seq'::regclass)";

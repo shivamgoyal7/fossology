@@ -502,7 +502,7 @@ ORDER BY lft asc
         "SELECT rf_pk, rf_shortname, rf_fullname, rf_text, rf_url, rf_risk, rf_detector_type, rf_spdx_compatible FROM ONLY license_ref WHERE $condition",
         $param, __METHOD__ . ".$condition.only");
     if (false === $row && isset($groupId)) {
-      $userId = (isset($_SESSION) && array_key_exists('UserId', $_SESSION)) ? $_SESSION['UserId'] : 0;
+      $userId = (isset($_SESSION) && array_key_exists('userId', $_SESSION)) ? $_SESSION['userId'] : 0;
       if (!empty($userId)) {
         $param[] = $userId;
         $extraCondition = "AND group_fk IN (SELECT group_fk FROM group_user_member WHERE user_fk=$".count($param).")";
@@ -614,12 +614,12 @@ ORDER BY lft asc
    * @param string $refText
    * @return int Id of license candidate
    */
-  public function insertUploadLicense($newShortname, $refText, $groupId, $userid)
+  public function insertUploadLicense($newShortname, $refText, $groupId, $userId)
   {
     $sql = 'INSERT INTO license_candidate (group_fk,rf_shortname,rf_fullname,rf_text,rf_md5,rf_detector_type,rf_user_fk_created) VALUES ($1,$2,$2,$3,md5($3),1,$4) RETURNING rf_pk';
     $refArray = $this->dbManager->getSingleRow($sql, array($groupId,
       StringOperation::replaceUnicodeControlChar($newShortname),
-      StringOperation::replaceUnicodeControlChar($refText), $userid), __METHOD__);
+      StringOperation::replaceUnicodeControlChar($refText), $userId), __METHOD__);
     return $refArray['rf_pk'];
   }
 
@@ -641,14 +641,14 @@ ORDER BY lft asc
    * @param string $readyformerge
    * @param int $riskLvl
    */
-  public function updateCandidate($rf_pk, $shortname, $fullname, $rfText, $url, $rfNotes, $lastmodified, $useridmodified, $readyformerge, $riskLvl)
+  public function updateCandidate($rf_pk, $shortname, $fullname, $rfText, $url, $rfNotes, $lastmodified, $userIdmodified, $readyformerge, $riskLvl)
   {
     $marydone = $this->dbManager->booleanToDb($readyformerge);
     $this->dbManager->getSingleRow('UPDATE license_candidate SET rf_shortname=$2, rf_fullname=$3, rf_text=$4, rf_url=$5, rf_notes=$6, rf_lastmodified=$7, rf_user_fk_modified=$8, marydone=$9, rf_risk=$10 WHERE rf_pk=$1',
       array($rf_pk, StringOperation::replaceUnicodeControlChar($shortname),
         StringOperation::replaceUnicodeControlChar($fullname),
         StringOperation::replaceUnicodeControlChar($rfText), $url,        
-        StringOperation::replaceUnicodeControlChar($rfNotes), $lastmodified, $useridmodified, $marydone,
+        StringOperation::replaceUnicodeControlChar($rfNotes), $lastmodified, $userIdmodified, $marydone,
         $riskLvl), __METHOD__);
   }
 
